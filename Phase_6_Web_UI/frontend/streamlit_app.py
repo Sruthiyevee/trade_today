@@ -3,20 +3,52 @@ import time
 import random
 import hashlib
 import yfinance as yf
-import json
-import os
+import io
+import requests
+import pandas as pd
 
-@st.cache_data
+NSE_EQUITY_URL = "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv"
+
+FALLBACK_STOCKS = [
+    {"ticker": "RELIANCE.NS", "name": "Reliance Industries Limited"},
+    {"ticker": "TCS.NS", "name": "Tata Consultancy Services"},
+    {"ticker": "HDFCBANK.NS", "name": "HDFC Bank Limited"},
+    {"ticker": "INFY.NS", "name": "Infosys Limited"},
+    {"ticker": "ICICIBANK.NS", "name": "ICICI Bank Limited"},
+    {"ticker": "HINDUNILVR.NS", "name": "Hindustan Unilever Limited"},
+    {"ticker": "ITC.NS", "name": "ITC Limited"},
+    {"ticker": "SBIN.NS", "name": "State Bank of India"},
+    {"ticker": "BHARTIARTL.NS", "name": "Bharti Airtel Limited"},
+    {"ticker": "KOTAKBANK.NS", "name": "Kotak Mahindra Bank Limited"},
+    {"ticker": "WIPRO.NS", "name": "Wipro Limited"},
+    {"ticker": "AXISBANK.NS", "name": "Axis Bank Limited"},
+    {"ticker": "LT.NS", "name": "Larsen & Toubro Limited"},
+    {"ticker": "ASIANPAINT.NS", "name": "Asian Paints Limited"},
+    {"ticker": "MARUTI.NS", "name": "Maruti Suzuki India Limited"},
+]
+
+@st.cache_data(ttl=3600)  # Cache for 1 hour
 def load_universe():
+    """Fetch the live NSE equity list from the official NSE CSV.
+    Falls back to a hardcoded list of major stocks if the download fails."""
     try:
-        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        universe_path = os.path.join(root_dir, "Phase_2_Data_Connectivity", "data_connectors", "ticker_universe.json")
-        if os.path.exists(universe_path):
-            with open(universe_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        res = requests.get(NSE_EQUITY_URL, headers=headers, timeout=10)
+        res.raise_for_status()
+        df = pd.read_csv(io.StringIO(res.text))
+        stocks = []
+        for _, row in df.iterrows():
+            symbol = str(row.get('SYMBOL', '')).strip()
+            name = str(row.get('NAME OF COMPANY', '')).strip()
+            if symbol and name:
+                stocks.append({"name": name, "ticker": f"{symbol}.NS"})
+        if stocks:
+            return stocks
     except Exception as e:
-        print(f"Error loading universe: {e}")
-    return []
+        st.warning(f"Could not fetch live NSE stock list (using fallback): {e}")
+    return FALLBACK_STOCKS
 
 # Basic configuration
 st.set_page_config(
