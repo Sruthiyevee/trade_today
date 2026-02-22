@@ -1,0 +1,13 @@
+# Phase 5: SEBI Compliance & Execution
+
+# Core Pydantic dependencies shared across the architecture
+pydantic>=2.7.0
+
+# Using built-in SQLite3 for 100% free, local transactional logging.
+# (No additional pip dependencies required for basic sqlite3)
+# To scale to PostgreSQL on Oracle Free Tier later, we would add:
+# psycopg2-binary>=2.9.9
+# sqlalchemy>=2.0.29
+
+# Execution formatting helpers
+requests>=2.31.0

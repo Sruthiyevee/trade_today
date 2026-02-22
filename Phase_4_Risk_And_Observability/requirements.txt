@@ -1,0 +1,13 @@
+# Phase 4: Risk, Orchestration & Observability
+
+# Core Phase 1-3 Dependencies required for Orchestrator compilation
+langchain>=0.1.13
+langgraph>=0.0.30
+pydantic>=2.7.0
+
+# Observability (100% Free Self-Hosted Alternative to LangSmith)
+langfuse>=2.25.0
+
+# Risk Computation Utilities
+pandas>=2.2.0
+numpy>=1.26.4

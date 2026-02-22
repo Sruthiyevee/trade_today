@@ -102,7 +102,7 @@ To maintain modularity as the project scales across the 6 phases, the directory 
 ### Phase 1: Core Framework & Infrastructure Setup
 
 ```text
-trade_today/Phase_1/
+trade_today/Phase_1_Core_Framework/
 │
 ├── core/
 │   ├── config.py           # Environment variables, Free API keys, DB URIs
@@ -121,7 +121,7 @@ trade_today/Phase_1/
 ### Phase 2: Data & Connectivity (Free Tools Expansion)
 
 ```text
-trade_today/Phase_2/
+trade_today/Phase_2_Data_Connectivity/
 │
 ├── data_connectors/
 │   ├── mcp_servers/        # Configuration for external MCP adapters
@@ -135,7 +135,7 @@ trade_today/Phase_2/
 ### Phase 3: Specialist Agents Implementation
 
 ```text
-trade_today/Phase_3/
+trade_today/Phase_3_Specialist_Agents/
 │
 ├── agents/                 # Specialist Graph Nodes
 │   ├── technical/          
@@ -152,7 +152,7 @@ trade_today/Phase_3/
 ### Phase 4: Risk, Orchestration & Observability
 
 ```text
-trade_today/Phase_4/
+trade_today/Phase_4_Risk_And_Observability/
 │
 ├── core/
 │   ├── risk_manager.py     # Exposure calculation and constraints
@@ -165,7 +165,7 @@ trade_today/Phase_4/
 ### Phase 5: SEBI Compliance & Execution
 
 ```text
-trade_today/Phase_5/
+trade_today/Phase_5_Compliance_And_Execution/
 │
 ├── compliance/
 │   ├── audit_logger.py     # Local SQLite/Postgres audit trail writer
@@ -178,7 +178,7 @@ trade_today/Phase_5/
 ### Phase 6: WebSockets & Streamlit UI
 
 ```text
-trade_today/Phase_6/
+trade_today/Phase_6_Web_UI/
 │
 ├── frontend/
 │   ├── streamlit_app.py    # Main UI entry point

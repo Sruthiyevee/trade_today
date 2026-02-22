@@ -1,0 +1,19 @@
+# Phase 3: Specialist Agent Dependencies
+
+# LangGraph & Core Pydantic Base
+langchain>=0.1.13
+langchain-core>=0.1.33
+langgraph>=0.0.30
+pydantic>=2.7.0
+
+# LLM Providers (Free Tier Focus)
+# Using Groq for the blazing fast 70B/8B reasoning 
+langchain-groq>=0.0.1
+# Using Google GenAI (Gemini 1.5 Flash) for massive context window / RAG synthesis
+langchain-google-genai>=1.0.1
+
+# Technical Analysis Support
+pandas>=2.2.0
+numpy>=1.26.4
+# (Ideally TA-Lib would go here, but installing the C-bindings can be tricky on Windows)
+# (For the mock setup, pandas calculations suffice)

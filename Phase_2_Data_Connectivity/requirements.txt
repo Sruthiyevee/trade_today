@@ -1,0 +1,20 @@
+# Phase 2 Data & Connectivity Dependencies
+
+# Base from Phase 1
+langchain>=0.1.13
+langgraph>=0.0.30
+python-dotenv>=1.0.1
+pydantic>=2.7.0
+
+# Free Sentiment Scraping
+beautifulsoup4>=4.12.3
+requests>=2.31.0
+selenium>=4.18.1
+
+# Fundamental RAG Pipeline
+chromadb>=0.4.24
+sentence-transformers>=2.5.1  # Local Free Embeddings (all-MiniLM-L6-v2)
+docling>=1.0.0                 # Advanced PDF extraction
+
+# Broker API Integration (e.g., DhanHQ)
+dhanhq>=1.3.0
