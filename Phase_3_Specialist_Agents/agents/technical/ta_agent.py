@@ -21,13 +21,13 @@ def run_technical_analysis(ticker: str, ohlcv_dummy_data: dict) -> dict:
         return {
             "agent_name": "Technical Analyst",
             "stance": "Bullish",
-            "reasoning": "Mock: 50 SMA crossed above 200 SMA indicating Golden Cross.",
+            "reasoning": "API Call Failed (Missing Key) - Fallback Mock: 50 SMA crossed above 200 SMA indicating Golden Cross.",
             "confidence_score": 0.85
         }
         
     # Example LangChain setup for when the API key is provided
     try:
-        llm = ChatGroq(temperature=0.1, model_name="llama3-8b-8192")
+        llm = ChatGroq(temperature=0.1, model_name="llama-3.1-8b-instant")
         prompt = ChatPromptTemplate.from_messages([
             ("system", "You are an expert Technical Analyst focusing on the Indian market. Analyze the given indicators and output a purely technical stance (Bullish/Bearish/Neutral)."),
             ("human", "Assess {ticker} based on this data: {data}")
@@ -45,4 +45,9 @@ def run_technical_analysis(ticker: str, ohlcv_dummy_data: dict) -> dict:
         
     except Exception as e:
         logger.error(f"TAA failed: {str(e)}")
-        return {}
+        return {
+            "agent_name": "Technical Analyst",
+            "stance": "Neutral",
+            "reasoning": f"API Call Failed: {str(e)}",
+            "confidence_score": 0.0
+        }

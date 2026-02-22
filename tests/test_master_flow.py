@@ -1,4 +1,9 @@
 import sys
+import os
+
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, root_dir)
+
 from master_orchestrator import run_master_orchestrator
 
 def run_5_test_cases():

@@ -22,8 +22,9 @@ from core.state import AnalystState, MarketData
 # Import actual logic from other phases
 from agents.technical.ta_agent import run_technical_analysis
 from agents.fundamental.fa_agent import run_fundamental_analysis
+from agents.sentiment.sentiment_agent import run_sentiment_analysis
 from core.risk_manager import evaluate_portfolio_risk
-from execution.order_manager import route_order
+from execution.order_manager import log_advisory_signal
 from data_connectors.yfinance_data import fetch_live_ohlcv
 
 logger = logging.getLogger("master_orchestrator")
@@ -43,15 +44,16 @@ def master_ingest_node(state: AnalystState):
 
 def master_specialist_node(state: AnalystState):
     """(Phase 3 integration) Calls actual agents."""
-    print("[Master] Triggering Technical and Fundamental Agents...")
+    print("[Master] Triggering Technical, Fundamental, and Sentiment Agents...")
     ticker = state["active_ticker"]
     
     # Run the real agents (these will fallback to mock data if API keys aren't set)
     ta_res = run_technical_analysis(ticker, {"mock": "ohlcv"})
     fa_res = run_fundamental_analysis(ticker, {"mock": "rag_docs"})
+    sa_res = run_sentiment_analysis(ticker, {"mock": "news_articles"})
     
     return {
-        "agent_debates": [ta_res, fa_res]
+        "agent_debates": [ta_res, fa_res, sa_res]
     }
 
 def master_risk_node(state: AnalystState):
@@ -65,19 +67,19 @@ def master_risk_node(state: AnalystState):
         "execution_plan": risk_assessment.get("rejection_reason", "Approved")
     }
 
-def master_broker_node(state: AnalystState):
-    """(Phase 5 integration)"""
+def master_advisory_node(state: AnalystState):
+    """(Phase 5 integration - Advisory Only)"""
     if state["risk_approved"]:
-        print("[Master] Risk passed. Routing to Broker and Logging to SQLite...")
+        print("[Master] Risk passed. Logging final advisory signal to SQLite...")
     else:
-        print("[Master] Risk failed. Logging blocked trade...")
+        print("[Master] Risk failed. Logging blocked advisory signal...")
         
-    route_res = route_order(
+    route_res = log_advisory_signal(
         state["active_ticker"], 
         state["final_decision"], 
         {"risk_approved": state["risk_approved"], "rejection_reason": state["execution_plan"]}
     )
-    return {"error_logs": [f"Execution status: {route_res['status']}"]}
+    return {"error_logs": [f"Advisory status: {route_res['status']}"]}
 
 # Build the UNIFIED Graph
 builder = StateGraph(AnalystState)
@@ -85,13 +87,13 @@ builder = StateGraph(AnalystState)
 builder.add_node("ingest", master_ingest_node)
 builder.add_node("specialists", master_specialist_node)
 builder.add_node("risk_layer", master_risk_node)
-builder.add_node("broker_execution", master_broker_node)
+builder.add_node("advisory_logger", master_advisory_node)
 
 builder.set_entry_point("ingest")
 builder.add_edge("ingest", "specialists")
 builder.add_edge("specialists", "risk_layer")
-builder.add_edge("risk_layer", "broker_execution")
-builder.add_edge("broker_execution", END)
+builder.add_edge("risk_layer", "advisory_logger")
+builder.add_edge("advisory_logger", END)
 
 master_app = builder.compile()
 

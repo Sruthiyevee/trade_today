@@ -2,7 +2,8 @@ import os
 import sys
 
 # Ensure the root of Phase 2 is in the python path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(root, "Phase_2_Data_Connectivity"))
 
 from data_connectors.news_scraper import get_basic_sentiment
 from data_connectors.rag_pipeline.ingest import ingest_nse_pdf, query_fundamentals

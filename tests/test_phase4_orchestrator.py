@@ -2,7 +2,8 @@ import os
 import sys
 
 # Ensure the root of Phase 4 is in the python path
-sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(root, "Phase_4_Risk_And_Observability"))
 
 from core.risk_manager import evaluate_portfolio_risk
 from core.langfuse_config import get_langfuse_handler

@@ -2,6 +2,21 @@ import streamlit as st
 import time
 import random
 import hashlib
+import yfinance as yf
+import json
+import os
+
+@st.cache_data
+def load_universe():
+    try:
+        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        universe_path = os.path.join(root_dir, "Phase_2_Data_Connectivity", "data_connectors", "ticker_universe.json")
+        if os.path.exists(universe_path):
+            with open(universe_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"Error loading universe: {e}")
+    return []
 
 # Basic configuration
 st.set_page_config(
@@ -57,9 +72,63 @@ def main():
     *(Note: This dashboard is currently running in **Simulation Mode** while the backend APIs are finalized. Responses are simulated based on the ticker you enter!)*
     """)
     
-    ticker = st.text_input("Enter Stock Symbol:", value="RELIANCE.NS").upper().strip()
+    universe = load_universe()
+    if universe:
+        options = [f"{item['name']} ({item['ticker']})" for item in universe]
+        # Default to Reliance if it exists in the list
+        default_index = 0
+        for i, opt in enumerate(options):
+            if "RELIANCE.NS" in opt:
+                default_index = i
+                break
+                
+        selected_display = st.selectbox("Search and Select a Stock:", options=options, index=default_index)
+        
+        # Extract just the ticker symbol from inside the parentheses
+        if selected_display:
+            ticker = selected_display.split('(')[-1].replace(')', '').strip()
+        else:
+            ticker = ""
+    else:
+        # Fallback if the JSON file wasn't built yet
+        ticker = st.text_input("Enter Stock Symbol (e.g., RELIANCE.NS, INFY.NS):", value="RELIANCE.NS").upper().strip()
     
-    if st.button("Analyze Stock"):
+    if ticker:
+        with st.spinner(f"Fetching live market data for {ticker}..."):
+            try:
+                stock = yf.Ticker(ticker)
+                info = stock.info
+                current_price = info.get('currentPrice', info.get('regularMarketPrice', 0.0))
+                company_name = info.get('longName', ticker)
+                
+                # Fetch recent history for OHLCV
+                hist = stock.history(period="1d")
+                if not hist.empty:
+                    latest = hist.iloc[-1]
+                    open_px = latest["Open"]
+                    high_px = latest["High"]
+                    low_px = latest["Low"]
+                    volume = latest["Volume"]
+                else:
+                    open_px, high_px, low_px, volume = 0.0, 0.0, 0.0, 0
+                
+                if current_price > 0:
+                    st.subheader(f"📊 {company_name} ({ticker})")
+                    
+                    # Display Live OHLCV metrics
+                    m1, m2, m3, m4, m5 = st.columns(5)
+                    m1.metric("LTP (Live)", f"₹{current_price:,.2f}")
+                    m2.metric("Open", f"₹{open_px:,.2f}")
+                    m3.metric("High", f"₹{high_px:,.2f}")
+                    m4.metric("Low", f"₹{low_px:,.2f}")
+                    m5.metric("Volume", f"{int(volume):,}")
+                    st.divider()
+                else:
+                    st.warning(f"Could not fetch complete live data for {ticker}. Please check the symbol.")
+            except Exception as e:
+                st.warning(f"Error fetching live data: {str(e)}")
+
+    if st.button("Trigger AI Analysis"):
         if not ticker:
             st.error("Please enter a valid stock symbol.")
             return

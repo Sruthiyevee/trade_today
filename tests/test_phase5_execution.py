@@ -3,11 +3,11 @@ import sys
 import sqlite3
 
 # Ensure the root of Phase 5 is in the python path
-phase5_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, phase5_root)
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(root, "Phase_5_Compliance_And_Execution"))
 
 from compliance.algo_id_gen import generate_algo_id
-from execution.order_manager import route_order
+from execution.order_manager import log_advisory_signal
 from compliance.audit_logger import DB_PATH
 
 def run_tests():
@@ -22,15 +22,15 @@ def run_tests():
     
     # 2. Test Rejected Order Routing & Audit 
     print("\n[2] Testing Execution Block (Risk Rejected):")
-    blocked_route = route_order("TCS.NS", "BUY", {"risk_approved": False, "rejection_reason": "Low Confidence"})
+    blocked_route = log_advisory_signal("TCS.NS", "BUY", {"risk_approved": False, "rejection_reason": "Low Confidence"})
     assert blocked_route["status"] == "blocked", "Order must not route if risk is unapproved."
     print(f"-> Safely Blocked! Algo ID tracking number: {blocked_route['algo_id']}")
     
     # 3. Test Approved Order Routing & Audit
-    print("\n[3] Testing Execution Approved (Simulated API Hook):")
-    approved_route = route_order("INFY.NS", "SELL", {"risk_approved": True, "rejection_reason": "Approved"})
-    assert approved_route["status"] == "executed", "Route ought to be executed if risk passes."
-    print(f"-> Trade Triggered! SEBI Audit ID: {approved_route['algo_id']} | Broker ID: {approved_route['broker_res']['order_id']}")
+    print("\n[3] Testing Execution Approved (Simulated Advisory Hook):")
+    approved_route = log_advisory_signal("INFY.NS", "SELL", {"risk_approved": True, "rejection_reason": "Approved"})
+    assert approved_route["status"] == "advisory_logged", "Route ought to be logged if risk passes."
+    print(f"-> Trade Triggered! SEBI Audit ID: {approved_route['algo_id']} | Signal: {approved_route['advisory_signal']}")
 
     # 4. Verify SQLite Write Results
     print("\n[4] Verifying SQLite 100% Free Persistent Storage:")

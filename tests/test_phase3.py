@@ -2,7 +2,8 @@ import os
 import sys
 
 # Ensure the root of Phase 3 is in the python path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(root, "Phase_3_Specialist_Agents"))
 
 from agents.technical.ta_agent import run_technical_analysis
 from agents.fundamental.fa_agent import run_fundamental_analysis

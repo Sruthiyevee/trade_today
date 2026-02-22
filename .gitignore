@@ -15,3 +15,12 @@ __pycache__/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# Secrets - NEVER commit these
+.streamlit/secrets.toml
+secrets.toml
+
+# Local data stores (can be regenerated)
+**/*.db
+Phase_2_Data_Connectivity/data_connectors/ticker_universe.json
+
