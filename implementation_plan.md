@@ -33,33 +33,29 @@ graph TD
 The operational cycle representing stateful tracking and iterative reasoning loops:
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Intake/Event
-    Intake/Event --> InitializeState: Market Trigger/User Query
+graph TD
+    Trigger([Market Trigger / User Query]) --> Init[Initialize State]
     
-    state GraphOrchestrator {
-        InitializeState --> PlanExecution: Formulate Plan
-        PlanExecution --> DelegateResearch
-        DelegateResearch --> CollectInsights
-        CollectInsights --> AdversarialDebate: Trigger Bull vs Bear
-        AdversarialDebate --> ConsolidateConsensus
-    }
+    subgraph LangGraph Orchestrator
+        Init --> Delegate{Delegate Research}
+        Delegate --> Consolidation[Collect Insights]
+        Consolidation --> Debate((Adversarial Debate))
+        Debate --> Consensus[Consolidate Consensus]
+    end
     
-    GraphOrchestrator --> TechnicalAnalysis: Request OHLCV/Indicators (TA-Lib)
-    TechnicalAnalysis --> GraphOrchestrator: Return TA Signals
+    subgraph Specialist Agents
+        Delegate -->|OHLCV Data| TA[Technical Analyst]
+        Delegate -->|Financials| FA[Fundamental Analyst]
+        Delegate -->|News Data| SA[Sentiment Analyst]
+        
+        TA --> Consolidation
+        FA --> Consolidation
+        SA --> Consolidation
+    end
     
-    GraphOrchestrator --> FundamentalAnalysis: Request Financial Extraction
-    FundamentalAnalysis --> GraphOrchestrator: Return Fundamentals
-    
-    GraphOrchestrator --> SentimentAnalysis: Request MMI/Micro-Trends
-    SentimentAnalysis --> GraphOrchestrator: Return Sentiment/Fear/Greed
-    
-    GraphOrchestrator --> RiskAssessment: Validate Constraints & Exposure
-    RiskAssessment --> Approved: Within Limits
-    RiskAssessment --> Reject/Adjust: Limit Breached
-    
-    Approved --> Execution: Trigger Broker Execute Order
-    Execution --> [*]
+    Consensus --> Risk{Risk Assessment}
+    Risk -->|Limit Breached| Adjust[Reject / Adjust]
+    Risk -->|Within Limits| Exec[Execute Order via Free Broker]
 ```
 
 ## Phase-Wise Development Plan
