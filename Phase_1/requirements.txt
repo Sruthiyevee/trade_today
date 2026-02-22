@@ -1,0 +1,15 @@
+# Phase 1 Core Infrastructure Dependencies
+
+# Orchestration & State
+langchain>=0.1.13
+langchain-core>=0.1.33
+langgraph>=0.0.30
+pydantic>=2.7.0
+
+# API & Web Framework
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+
+# Environment & Tracing
+python-dotenv>=1.0.1
+langfuse>=2.25.0
