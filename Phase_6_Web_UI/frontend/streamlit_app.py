@@ -100,17 +100,14 @@ def main():
     st.markdown("""
     Welcome to your AI Stock Trading Assistant. 
     Simply enter a stock symbol below, and our team of AI analysts will research the company's financials, current news, and market trends to give you a clear trading decision.
-    
-    *(Note: This dashboard is currently running in **Simulation Mode** while the backend APIs are finalized. Responses are simulated based on the ticker you enter!)*
     """)
 
     st.warning(
-        "⚠️ **Disclaimer:** The analysis and recommendations provided by this tool are "
+        "**Disclaimer:** The analysis and recommendations provided by this tool are "
         "**AI-generated suggestions only** and do **not** constitute financial advice, "
         "investment recommendations, or any form of regulated guidance. "
         "Always consult a qualified financial advisor before making investment decisions. "
-        "Trade at your own risk.",
-        icon="⚠️"
+        "Trade at your own risk."
     )
     
     universe = load_universe()
