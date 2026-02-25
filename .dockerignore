@@ -1,0 +1,51 @@
+# Virtual environments - never copy these into the image
+.venv
+venv
+env
+ENV
+Phase_6_Web_UI/.venv
+
+# Python cache
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+*.pyc
+
+# Git
+.git
+.gitignore
+
+# Secrets - CRITICAL: never bake credentials into the image
+.env
+.streamlit/secrets.toml
+secrets.toml
+
+# Local databases (regenerated at runtime)
+**/*.db
+
+# Generated data files (can be regenerated)
+Phase_2_Data_Connectivity/data_connectors/ticker_universe.json
+
+# Test files
+tests/
+**/tests/
+
+# IDE / OS
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+Summary.md
+implementation_plan.md
+simple_architecture_guide.md
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
